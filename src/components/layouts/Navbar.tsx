@@ -39,8 +39,20 @@ const Navbar = ({ className }: NavbarProps) => {
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600 dark:text-slate-300">
           <Link href="#features" className="hover:text-blue-600 transition-colors">Features</Link>
           <Link href="#how-it-works" className="hover:text-blue-600 transition-colors">How it works</Link>
-          <Link href="#pricing" className="hover:text-blue-600 transition-colors">Pricing</Link>
-        </div >
+          <a 
+            href="https://github.com/Paul-Carouge/ZenBoard" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="hover:text-blue-600 transition-colors"
+          >
+            Github
+          </a>
+          {user && (
+            <Link href="/dashboard" className="text-blue-600 hover:underline decoration-2 underline-offset-4">
+              Dashboard
+            </Link>
+          )}
+        </div>
 
         <div className="flex items-center gap-4">
           {isLoading ? (

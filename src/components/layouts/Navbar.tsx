@@ -4,6 +4,8 @@ import * as React from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
+import { UserMenu } from '@/components/ui/UserMenu'
+import { useAuth } from '@/hooks/useAuth'
 
 interface NavbarProps {
   className?: string
@@ -11,6 +13,7 @@ interface NavbarProps {
 
 const Navbar = ({ className }: NavbarProps) => {
   const [isScrolled, setIsScrolled] = React.useState(false)
+  const { user, isLoading } = useAuth()
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -37,13 +40,23 @@ const Navbar = ({ className }: NavbarProps) => {
           <Link href="#features" className="hover:text-blue-600 transition-colors">Features</Link>
           <Link href="#how-it-works" className="hover:text-blue-600 transition-colors">How it works</Link>
           <Link href="#pricing" className="hover:text-blue-600 transition-colors">Pricing</Link>
-        </div>
+        </div >
 
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
-            Log in
-          </Button>
-          <Button size="sm">Get Started</Button>
+          {isLoading ? (
+             <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 animate-pulse" />
+          ) : user ? (
+            <UserMenu />
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
+                <Link href="/login">Log in</Link>
+              </Button>
+              <Button size="sm" asChild>
+                <Link href="/register">Get Started</Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </nav>

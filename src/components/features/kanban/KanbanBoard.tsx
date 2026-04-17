@@ -2,44 +2,66 @@
 
 import React from 'react'
 import { KanbanColumn } from './KanbanColumn'
-import { TTask } from '@/types/kanban'
-
-const MOCK_TASKS: TTask[] = [
-  { id: '1', title: 'Design landing page', description: 'Create a beautiful hero section with GSAP animations.', priority: 'high', columnId: 'todo' },
-  { id: '2', title: 'Setup PocketBase', description: 'Configure the backend and auth flow.', priority: 'medium', columnId: 'in-progress' },
-  { id: '3', title: 'Implement Auth UI', description: 'Build login and register pages.', priority: 'low', columnId: 'done' },
-]
-
-const MOCK_COLUMNS = [
-  { id: 'todo', title: 'À faire', taskIds: ['1', '2'] },
-  { id: 'in-progress', title: 'En cours', taskIds: ['2'] },
-  { id: 'done', title: 'Terminé', taskIds: ['3'] },
-]
+import { TTask, TColumn } from '@/types/kanban'
+import { cn } from '@/lib/utils'
+import { useTasks } from '@/hooks/useTasks'
+import { Button } from '@/components/ui/Button'
+import { Plus } from 'lucide-react'
+import { addTaskAction, addColumnAction } from '@/app/actions/kanban-actions'
 
 interface KanbanBoardProps {
+  boardId: string
+  columns: TColumn[] 
   className?: string
 }
 
-const KanbanBoard = ({ className }: KanbanBoardProps) => {
-  // In a real app, we would fetch this data from PocketBase
-  const columnsData = MOCK_COLUMNS.map(col => ({
-    ...col,
-    tasks: MOCK_TASKS.filter(task => col.taskIds.includes(task.id))
-  }))
+const KanbanBoard = ({ boardId, columns, className }: KanbanBoardProps) => {
+  const { tasks, isLoading } = useTasks({ boardId })
+
+  // Function to add a task via Server Action
+  const handleAddTask = async (columnId: string) => {
+    const result = await addTaskAction(boardId, columnId);
+    if (!result.success) {
+      alert(`Erreur lors de l'ajout : ${result.error}`);
+    }
+  };
+
+  // Function to add a column via Server Action
+  const handleAddColumn = async () => {
+    const title = prompt('Nom de la nouvelle liste ?');
+    if (!title) return;
+
+    const result = await addColumnAction(boardId, title);
+    if (!result.success) {
+      alert(`Erreur lors de l'ajout : ${result.error}`);
+    }
+  };
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-[400px]">Chargement du tableau...</div>;
+  }
 
   return (
     <div className={cn("flex gap-6 overflow-x-auto pb-8 items-start", className)}>
-      {columnsData.map((column) => (
+      {columns.map((column) => (
         <KanbanColumn 
           key={column.id} 
+          id={column.id}
           title={column.title} 
-          tasks={column.tasks} 
+          tasks={tasks.filter(t => column.taskIds.includes(t.id))}
+          onAddTask={handleAddTask}
         />
       ))}
+      
+      <button 
+        onClick={handleAddColumn}
+        className="w-[320px] min-h-[100px] flex items-center justify-center gap-2 text-sm font-medium text-slate-500 hover:text-blue-600 hover:bg-white dark:hover:bg-slate-900 rounded-xl border-2 border-dashed border-transparent hover:border-blue-200 transition-all"
+      >
+        <Plus size={18} />
+        Ajouter une liste
+      </button>
     </div>
   )
 }
-
-import { cn } from '@/lib/utils' // Import for the classname prop if needed, though I added it above to avoid issues
 
 export { KanbanBoard }

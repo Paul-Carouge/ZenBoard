@@ -3,9 +3,9 @@
 import { useState } from 'react'
 import { pb } from '@/lib/pb'
 import { TBoard } from '@/types/kanban'
-import { BoardList } from '@/components/features/kanban/BoardList'
 import { KanbanBoard } from '@/components/features/kanban/KanbanBoard'
 import { CreateBoardModal } from '@/components/features/kanban/CreateBoardModal'
+import { BoardList } from '@/components/features/kanban/BoardList'
 import { Button } from '@/components/ui/Button'
 import { Plus, ArrowLeft } from 'lucide-react'
 import { useBoards } from '@/hooks/useBoards'
@@ -73,9 +73,9 @@ export default function DashboardPage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto">
         {selectedBoardId === 'new' ? (
-          null // Géré par la modale
+          null // Géré par la modale, mais on garde la logique pour éviter les erreurs de rendu
         ) : selectedBoardId ? (
-          <KanbanBoard />
+          <KanbanBoard boardId={selectedBoardId} />
         ) : (
           <BoardList 
             boards={boards} 

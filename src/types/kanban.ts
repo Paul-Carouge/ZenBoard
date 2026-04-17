@@ -6,6 +6,7 @@ export interface TTask {
   description?: string
   priority: TPriority
   columnId: string
+  boardId: string
 }
 
 export interface TColumn {
